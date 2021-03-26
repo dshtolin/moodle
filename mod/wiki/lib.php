@@ -441,28 +441,24 @@ function wiki_pluginfile($course, $cm, $context, $filearea, $args, $forcedownloa
     }
 }
 
+/**
+ * @param object $cm
+ * @param string $search
+ * @param object|NULL $subwiki
+ * @return string
+ */
 function wiki_search_form($cm, $search = '', $subwiki = null) {
-    global $CFG, $OUTPUT;
-
-    $output = '<div class="wikisearch">';
-    $output .= '<form method="post" action="' . $CFG->wwwroot . '/mod/wiki/search.php" style="display:inline">';
-    $output .= '<fieldset class="invisiblefieldset">';
-    $output .= '<legend class="accesshide">'. get_string('searchwikis', 'wiki') .'</legend>';
-    $output .= '<label class="accesshide" for="searchwiki">' . get_string("searchterms", "wiki") . '</label>';
-    $output .= '<input id="searchwiki" name="searchstring" type="text" size="18" value="' . s($search, true) . '" alt="search" />';
-    $output .= '<input name="courseid" type="hidden" value="' . $cm->course . '" />';
-    $output .= '<input name="cmid" type="hidden" value="' . $cm->id . '" />';
-    if (!empty($subwiki->id)) {
-        $output .= '<input name="subwikiid" type="hidden" value="' . $subwiki->id . '" />';
+    global $PAGE;
+    $subwikiid = null;
+    if (!empty($subwiki->id))
+    {
+        $subwikiid = $subwiki->id;
     }
-    $output .= '<input name="searchwikicontent" type="hidden" value="1" />';
-    $output .= '<input value="' . get_string('searchwikis', 'wiki') . '" class="btn btn-secondary" type="submit" />';
-    $output .= '</fieldset>';
-    $output .= '</form>';
-    $output .= '</div>';
-
-    return $output;
+    $wikisearch = new \mod_wiki\output\quick_search_form($cm->course, $cm->id, s($search, true), $subwikiid);
+    $output = $PAGE->get_renderer('mod_wiki');
+    return $output->render($wikisearch);
 }
+
 function wiki_extend_navigation(navigation_node $navref, $course, $module, $cm) {
     global $CFG, $PAGE, $USER;
 
